@@ -1,108 +1,270 @@
-// mainapplication.cpp : Defines the entry point for the console application.
-//
-
 #include <iostream>
+
+// a megoldott plusz feladatoknal allitsa 1-re a megfelelo pelda kodreszek bekapcsolasahoz
+#define PLUS1 0
+#define PLUS3 0
+
+// adjon hozza tovabbi include-okat, ha kell
 #include "vehicles.h"
 #include "parts.h"
-
-// Feladat: keszitsen programot jarmupark nyilvantartasahoz! Ehhez ket header file kell: vehicles.h es parts.h.
-// A vehicles.h fajlban:
-// Keszitsen egy absztrakt Vehicle (Jarmu) osztalyt! Minden jarmunak legyen neve, es tetszoleges szamu es tipusu alkatresze.
-// A nevet lehessen lekerni egy getName() tagfuggvennyel, de kivulrol ne lehessen modositani, a letrehozaskor kelljen megadni.
-// Alkatreszt az addPart(Part*) fuggvennyel lehessen a Vehicle objektumhoz hozzadni. (A Part osztalyrol kesobb lesz szo.)
-// Mas modon ne lehessen kivulrol elerni az alkatresz objektumokat, es ha a jarmu objektum megsemmisul, szabaditsa fel az alkatreszeit is.
-// A Vehicle osztalyban legyen egy implementacio nelkuli print() fuggveny, amit a szarmaztatott osztalyoknak kell majd megvalositaniuk.
-//
-// Vehicle osztalybol szarmazik a Car es a MotorBike. Mindegyik megvalositja a print() fuggvenyt, es kiirjak magukrol:
-// - "Car named X with M/N healthy parts", illetve "MotorBike named X with M/N healthy parts", ahol X a jarmu neve, M az ep, N az osszes alkatresz szama.
-// Amikor Car-t peldanyositunk, hozzon letre maganak 4 kereket a Part osztalybol, kulonbozo nevekkel (pl. getName() + " BalElso kereke") es 5 eves elettartammal.
-// Amikor motorbiciklit peldanyositunk, hozzon letre maganak 2 kereket, kulonbozo nevekkel es 4 eves elettartammal.
-
-// Kulon header file-ban (parts.h) keszitsen egy Part osztalyt.
-// Minden Part objektumnak van egy eletkora (int), ami a getAge() fuggvennyel kerdezheto le, es kezdetben 0,
-// valamint egy elettartama (int), amit letrehozaskor kell megadni, es kesobb mar nem modosithato (osztalyon belulrol sem).
-// Part osztalynak legyen egy amortize() fuggvenye, ami 1-gyel noveli az alkatresz eletkorat, valamint egy isHealthy(), ami true-t ad vissza, ha az eletkor <= elettartam, kulonben false.
-// Tovabba, egy repair() fuggveny, ami 0-ra allitja az eletkort.
-//
-// A Part osztalybol szarmazzon egy MultiPart, ami tobb Part objektumot tud tarolni, amiket az addPart(Part*) fuggvennyel lehet hozzaadni.
-// Megszunesekor szabaditsa fel a benne tarolt alkatreszeket.
-// A Multipart getAge() fuggvenye a benne levo legidosebb alkatresz korat adja vissza, az amortize() pedig minden tarolt alkatreszre meghivja az amortize()-t.
-// Az isHealthy() akkor adjon vissza true-t, ha minden reszere igaz, hogy isHealthy(), es a legidosebb alkatreszenek kora sem haladja meg a MultiPart objektumnak megadott elettartamot.
-// A repair() minden !isHealthy() alkatreszre hivja meg a repair()-t.
-// A jarmu print()-jenel a MultiPart is egy Part-nak szamit.
-
-// Visszaterve a vehicles.h header file-ra:
-// A Vehicle-nek legyen egy amortizeParts() fuggvenye, ami minden alkatreszere meghivja az amortize()-t.
-// Keszitsen egy VehiclePark nevu osztalyt, ami tetszoleges szamu es tipusu jarmuvet tudjon tarolni, es ha megsemmisul, szabaditsa is fel oket.
-// Kellenek bele az addVehicle(Vehicle*) valamint a printVehicles() fuggvenyek (ez utobbi vegig megy a jarmuveken es mindegyiknek meghivja a print() fuggvenyet.
-// A VehiclePark osztaly amortize() fuggvenye minden benne levo jarmure meghivja az amortizeParts() fuggvenyt.
-
-// Vegezetul: kell a VehiclePark meg a Vehicle osztalyba is egy repair() fuggveny. Ha a VehiclePark-nak ezt a fuggvenyet meghivjuk, meghivja a parkban levo
-// osszes jarmu repair() fuggvenyet - az pedig az osszes javitando (!isHealthy()) alkatreszre meghivja a repair()-t.
-
-// A feladat megoldasahoz erdemes a main() fuggveny szerint menni, ott mindig jelezve van, hogy minek kell a konzolon megjelennie.
-
 
 int main()
 {
     // Vehicle v;
 	// absztrakt osztaly, nem megy!!
-	Vehicle* c1 = new Car("Olivers Ferrari");
-    Vehicle* mb1 = new MotorBike("Mates Harley");
-    Vehicle* c2 = new Car("Ernos Porsche");
-    Vehicle* c3 = new Car("Adams Mercedes");
 
-	c2->addPart(new Part("Air conditioner", 3));
+	Vehicle* c1 = new Car("Oliver's Ferrari");
+    Vehicle* c2 = new Car("Erno's Porsche");
+    Vehicle* c3 = new Car("Adam's Mercedes");
+    Vehicle* mb1 = new MotorBike("Mate's Harley");
 
-    MultiPart* mp = new MultiPart("Engine", 6);
-    mp->addPart(new Part("Piston", 7));
-    mp->addPart(new Part("Spark plug", 4));
-    c3->addPart(mp);
+	c1->addPart(new Part("Air conditioner", 2));
+    c2->addPart(new Part("Engine", 6));
+    c3->addPart(new Part("Piston", 7));
+    c3->addPart(new Part("Spark plug", 3));
 
 	VehiclePark vehiclepark;
 	vehiclepark.addVehicle(c1);
 	vehiclepark.addVehicle(c2);
+
     vehiclepark.amortize();
     std::cout << "After 1 year:\n";
     vehiclepark.printVehicles();
 
 	vehiclepark.addVehicle(c3);
 	vehiclepark.addVehicle(mb1);
-    vehiclepark.amortize();
-    vehiclepark.amortize();
-    std::cout << "After 3 years:\n";
-	vehiclepark.printVehicles();
 
-	vehiclepark.amortize();
-    std::cout << "After 4 years:\n";
-    vehiclepark.printVehicles();
+    for (int y = 2; y < 10; ++y) {
+        vehiclepark.amortize();
+        std::cout << "After " << y << " years:\n";
+        vehiclepark.printVehicles();
+        if (y == 6) vehiclepark.repairCars();
+        else if (y == 7) vehiclepark.repairBikes();
+#if PLUS1
+        else if (y == 8) vehiclepark.repairVehicles<Vehicle>();
+#endif
+    }
 
-	vehiclepark.amortize();
-    std::cout << "After 5 years:\n";
-    vehiclepark.printVehicles();
+#if PLUS3
+    VehiclePark parkcopy{ vehiclepark }, another = vehiclepark;
+#else
+    for (auto obj : { c1, c2, c3, mb1 }) delete obj;
+#endif
 
-	vehiclepark.amortize();
-    std::cout << "After 6 years:\n";
-    vehiclepark.printVehicles();
-
-    vehiclepark.repair();
-    std::cout << "After repair:\n";
-    vehiclepark.printVehicles();
-
-	vehiclepark.amortize();
-    std::cout << "After 7 years:\n";
-    vehiclepark.printVehicles();
-
-    vehiclepark.amortize();
-    std::cout << "After 8 years:\n";
-    vehiclepark.printVehicles();
-
-    vehiclepark.repair();
-    std::cout << "After repair:\n";
-    vehiclepark.printVehicles();
-
-    std::cout << "Press Enter to exit...\n";
+    std::cout << "\nPress Enter to exit...\n";
     std::cin.get();
+
     return 0;
 }
 
+// Pelda kimenet
+/*
+After 1 year:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (1 years old)
+        Front right wheel (1 years old)
+        Rear left wheel (1 years old)
+        Rear right wheel (1 years old)
+        Air conditioner (1 years old)
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (1 years old)
+        Front right wheel (1 years old)
+        Rear left wheel (1 years old)
+        Rear right wheel (1 years old)
+        Engine (1 years old)
+After 2 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (2 years old)
+        Front right wheel (2 years old)
+        Rear left wheel (2 years old)
+        Rear right wheel (2 years old)
+        Air conditioner (2 years old)
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (2 years old)
+        Front right wheel (2 years old)
+        Rear left wheel (2 years old)
+        Rear right wheel (2 years old)
+        Engine (2 years old)
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (1 years old)
+        Front right wheel (1 years old)
+        Rear left wheel (1 years old)
+        Rear right wheel (1 years old)
+        Piston (1 years old)
+        Spark plug (1 years old)
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (1 years old)
+        Rear wheel (1 years old)
+After 3 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (3 years old)
+        Front right wheel (3 years old)
+        Rear left wheel (3 years old)
+        Rear right wheel (3 years old)
+        Air conditioner (3 years old) - Needs repair!
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (3 years old)
+        Front right wheel (3 years old)
+        Rear left wheel (3 years old)
+        Rear right wheel (3 years old)
+        Engine (3 years old)
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (2 years old)
+        Front right wheel (2 years old)
+        Rear left wheel (2 years old)
+        Rear right wheel (2 years old)
+        Piston (2 years old)
+        Spark plug (2 years old)
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (2 years old)
+        Rear wheel (2 years old)
+After 4 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (4 years old)
+        Front right wheel (4 years old)
+        Rear left wheel (4 years old)
+        Rear right wheel (4 years old)
+        Air conditioner (4 years old) - Needs repair!
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (4 years old)
+        Front right wheel (4 years old)
+        Rear left wheel (4 years old)
+        Rear right wheel (4 years old)
+        Engine (4 years old)
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (3 years old)
+        Front right wheel (3 years old)
+        Rear left wheel (3 years old)
+        Rear right wheel (3 years old)
+        Piston (3 years old)
+        Spark plug (3 years old)
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (3 years old)
+        Rear wheel (3 years old)
+After 5 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (5 years old)
+        Front right wheel (5 years old)
+        Rear left wheel (5 years old)
+        Rear right wheel (5 years old)
+        Air conditioner (5 years old) - Needs repair!
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (5 years old)
+        Front right wheel (5 years old)
+        Rear left wheel (5 years old)
+        Rear right wheel (5 years old)
+        Engine (5 years old)
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (4 years old)
+        Front right wheel (4 years old)
+        Rear left wheel (4 years old)
+        Rear right wheel (4 years old)
+        Piston (4 years old)
+        Spark plug (4 years old) - Needs repair!
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (4 years old)
+        Rear wheel (4 years old)
+After 6 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (6 years old) - Needs repair!
+        Front right wheel (6 years old) - Needs repair!
+        Rear left wheel (6 years old) - Needs repair!
+        Rear right wheel (6 years old) - Needs repair!
+        Air conditioner (6 years old) - Needs repair!
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (6 years old) - Needs repair!
+        Front right wheel (6 years old) - Needs repair!
+        Rear left wheel (6 years old) - Needs repair!
+        Rear right wheel (6 years old) - Needs repair!
+        Engine (6 years old)
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (5 years old)
+        Front right wheel (5 years old)
+        Rear left wheel (5 years old)
+        Rear right wheel (5 years old)
+        Piston (5 years old)
+        Spark plug (5 years old) - Needs repair!
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (5 years old) - Needs repair!
+        Rear wheel (5 years old) - Needs repair!
+After 7 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (1 years old)
+        Front right wheel (1 years old)
+        Rear left wheel (1 years old)
+        Rear right wheel (1 years old)
+        Air conditioner (1 years old)
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (1 years old)
+        Front right wheel (1 years old)
+        Rear left wheel (1 years old)
+        Rear right wheel (1 years old)
+        Engine (7 years old) - Needs repair!
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (6 years old) - Needs repair!
+        Front right wheel (6 years old) - Needs repair!
+        Rear left wheel (6 years old) - Needs repair!
+        Rear right wheel (6 years old) - Needs repair!
+        Piston (6 years old)
+        Spark plug (1 years old)
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (6 years old) - Needs repair!
+        Rear wheel (6 years old) - Needs repair!
+After 8 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (2 years old)
+        Front right wheel (2 years old)
+        Rear left wheel (2 years old)
+        Rear right wheel (2 years old)
+        Air conditioner (2 years old)
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (2 years old)
+        Front right wheel (2 years old)
+        Rear left wheel (2 years old)
+        Rear right wheel (2 years old)
+        Engine (8 years old) - Needs repair!
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (7 years old) - Needs repair!
+        Front right wheel (7 years old) - Needs repair!
+        Rear left wheel (7 years old) - Needs repair!
+        Rear right wheel (7 years old) - Needs repair!
+        Piston (7 years old)
+        Spark plug (2 years old)
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (1 years old)
+        Rear wheel (1 years old)
+After 9 years:
+Vehicles in park are:
+Car named Oliver's Ferrari with 5 parts:
+        Front left wheel (3 years old)
+        Front right wheel (3 years old)
+        Rear left wheel (3 years old)
+        Rear right wheel (3 years old)
+        Air conditioner (3 years old) - Needs repair!
+Car named Erno's Porsche with 5 parts:
+        Front left wheel (3 years old)
+        Front right wheel (3 years old)
+        Rear left wheel (3 years old)
+        Rear right wheel (3 years old)
+        Engine (9 years old) - Needs repair!
+Car named Adam's Mercedes with 6 parts:
+        Front left wheel (8 years old) - Needs repair!
+        Front right wheel (8 years old) - Needs repair!
+        Rear left wheel (8 years old) - Needs repair!
+        Rear right wheel (8 years old) - Needs repair!
+        Piston (8 years old) - Needs repair!
+        Spark plug (3 years old)
+Motorbike named Mate's Harley with 2 parts:
+        Front wheel (2 years old)
+        Rear wheel (2 years old)
+
+Press Enter to exit...
+*/
